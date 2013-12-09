@@ -117,27 +117,37 @@ function updateDrupalFile($file) {
   if (!file_exists($file->pdf)) {
     return FALSE;
   }
-  // TODO: Could the path be converted easier?
-  // - What if the files folder are somewhere else?
-  // - Only possible with public files.
+
   $file_parts = explode('sites/default/files/', $file->file);
-  if (isset($file_parts[1])) {
-    $file_uri = 'public://' . $file_parts[1];
+
+  if (!isset($file_parts[1])) {
+    return FALSE;
   }
 
-  $d_file = db_query('SELECT f.fid
-                      FROM {file_managed} f
-                      WHERE f.uri = :uri', array(':uri' => $file_uri));
+  $public_file_uri = 'public://' . $file_parts[1];
+  $private_file_uri = 'private://' . $file_parts[1];
 
-  if ($fid = $d_file->fetchField()) {
+  $query = db_query('SELECT f.fid, f.uri
+                      FROM {file_managed} f
+                      WHERE f.uri = :public_uri
+                      OR f.uri = :private_uri
+                      OR f.uri = :original_uri', array(
+                        ':public_uri' => $public_file_uri,
+                        ':private_uri' => $private_file_uri,
+                        ':original_uri' => $file->file,
+                      ));
+  $d_file = $query->fetchAssoc();
+
+  if ($d_file) {
+
     db_update('file_managed')
       ->fields(array(
-        'uri' => preg_replace('/\.(' . implode('|', PDFConverter::getAllowedExtenstions()) . ')$/i', '.pdf', $file_uri),
+        'uri' => preg_replace('/\.(' . implode('|', PDFConverter::getAllowedExtenstions()) . ')$/i', '.pdf', $d_file['uri']),
         'filename' => basename($file->pdf),
         'timestamp' => time(),
         'filesize' => filesize($file->pdf),
       ))
-      ->condition('fid', $fid)
+      ->condition('fid', $d_file['fid'])
       ->execute();
   }
 }
