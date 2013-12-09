@@ -114,6 +114,9 @@ function getFilesList($folder, $pattern) {
  *   The file path.
  */
 function updateDrupalFile($file) {
+  if (!file_exists($file->pdf)) {
+    return FALSE;
+  }
   // TODO: Could the path be converted easier?
   // - What if the files folder are somewhere else?
   // - Only possible with public files.
