@@ -111,7 +111,6 @@ class PDFConverter {
         // Get the correct filter name. If couldnt be found it uses regular
         // writer as filter.
         $filter_name = isset(self::$exportFilterMap['pdf'][$this->fileFamily]['soffice']) ? self::$exportFilterMap['pdf'][$this->fileFamily]['soffice'] : self::$exportFilterMap['pdf'][self::FAMILY_TEXT]['soffice'];
-        error_log('soffice --headless --invisible -convert-to pdf:' . $filter_name . ' -outdir "' . $output_dir . '" "' . $this->file . '"');
         shell_exec('soffice --headless --invisible -convert-to pdf:' . $filter_name . ' -outdir "' . $output_dir . '" "' . $this->file . '"');
 
         return TRUE;
@@ -123,7 +122,6 @@ class PDFConverter {
       // multipage .tiff files to pdf.
       //
       case 'ImageMagick':
-        error_log('convert "' . $this->file . '" -density 300x300 -compress jpeg "' . $this->pdf . '"');
         shell_exec('convert "' . $this->file . '" -density 300x300 -compress jpeg "' . $this->pdf . '"');
 
         return TRUE;
@@ -146,7 +144,6 @@ class PDFConverter {
         // http://blog.spiralofhope.com/667-importing-eml-into-msg-or-mbox.html
         // Convert .msg file to .eml
         if (!file_exists($eml_file) && preg_match('/\.msg$/i', $this->file)) {
-          error_log('mapitool -i "' . $this->file . '"');
           shell_exec('mapitool -i "' . $this->file . '"');
         }
 
@@ -154,7 +151,6 @@ class PDFConverter {
         // Unpack .eml file. This will put all attached documents into same
         // directory.
         if (file_exists($eml_file) && !file_exists($sub_dir . '/' . basename($eml_file) . '.part1.html')) {
-          error_log('munpack -t -C "' . $sub_dir . '" "' . $eml_file . '"');
           shell_exec('munpack -t -C "' . $sub_dir . '" "' . $eml_file . '"');
 
           // Munpack unpacks the content of the email in .msg as a part1(txt)
