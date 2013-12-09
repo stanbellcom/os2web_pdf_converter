@@ -26,7 +26,7 @@ class PDFConverter {
     self::FAMILY_SPREADSHEET => array('ods','ots','rdf','xls','xlsx'),
     self::FAMILY_PRESENTATION => array('ppt', 'pptx', 'odp'),
     self::FAMILY_DRAWING => array('odg'),
-    self::FAMILY_MULTIPAGETIFF => array('tiff'),
+    self::FAMILY_MULTIPAGETIFF => array('tiff', 'tif'),
     self::FAMILY_MSG => array('msg', 'eml'),
   );
 
