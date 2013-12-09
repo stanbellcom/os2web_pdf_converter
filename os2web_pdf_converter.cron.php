@@ -26,7 +26,7 @@ if (!shell_exec('which soffice')) {
   exit();
 }
 
-if (!extension_loaded('imagick')) {
+if (!shell_exec('which convert')) {
   print ('imagick was not found. Cannot convert .tiff files');
 }
 
