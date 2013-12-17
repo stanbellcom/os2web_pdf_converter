@@ -45,6 +45,12 @@ elseif (!is_dir($_SERVER['argv'][1])) {
 else {
   $directory_root = $_SERVER['argv'][1];
 
+  $tmp_directory = '/tmp/os2web_pdf_converter';
+  if (!is_dir($tmp_directory)) {
+    mkdir($tmp_directory);
+  }
+  putenv("MAGICK_TMPDIR=" . $tmp_directory);
+
   // Setup Drupal but only if provided.
   if (isset($_SERVER['argv'][2])) {
     if (!file_exists($_SERVER['argv'][2] . '/includes/bootstrap.inc')) {
@@ -83,6 +89,11 @@ foreach (getFilesList($directory_root, '/.*\.(' . implode('|', $allowed_extensio
       error_log($e->getMessage());
     }
   }
+}
+
+// Remove all temp files.
+if (is_dir($tmp_directory)) {
+  rrmdir($tmp_directory);
 }
 
 /**
@@ -150,4 +161,22 @@ function updateDrupalFile($file) {
       ->condition('fid', $d_file['fid'])
       ->execute();
   }
+}
+
+/**
+ * Recursively remove a directory.
+ *
+ * @param string $dir
+ *   The dir to remove
+ */
+function rrmdir($dir) {
+  foreach (glob($dir . '/*') as $file) {
+    if (is_dir($file)) {
+      rrmdir($file);
+    }
+    else {
+      unlink($file);
+    }
+  }
+  rmdir($dir);
 }
