@@ -75,7 +75,7 @@ foreach (getFilesList($directory_root, '/.*\.(' . implode('|', $allowed_extensio
         if (defined('DRUPAL_ROOT')) {
           updateDrupalFile($file);
         }
-        print ($file->file . ' was converted to pdf.');
+//        print ($file->file . ' was converted to pdf.');
       }
 
     }

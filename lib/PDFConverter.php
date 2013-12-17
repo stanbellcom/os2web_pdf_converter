@@ -111,7 +111,7 @@ class PDFConverter {
         // Get the correct filter name. If couldnt be found it uses regular
         // writer as filter.
         $filter_name = isset(self::$exportFilterMap['pdf'][$this->fileFamily]['soffice']) ? self::$exportFilterMap['pdf'][$this->fileFamily]['soffice'] : self::$exportFilterMap['pdf'][self::FAMILY_TEXT]['soffice'];
-        shell_exec('soffice --headless --invisible -convert-to pdf:' . $filter_name . ' -outdir "' . $output_dir . '" "' . $this->file . '"');
+        shell_exec('soffice --headless --invisible -convert-to pdf:' . $filter_name . ' -outdir "' . $output_dir . '" "' . $this->file . '" &>/dev/null');
 
         return TRUE;
 
@@ -122,7 +122,7 @@ class PDFConverter {
       // multipage .tiff files to pdf.
       //
       case 'ImageMagick':
-        shell_exec('convert "' . $this->file . '" -density 300x300 -compress jpeg "' . $this->pdf . '"');
+        shell_exec('convert -quiet "' . $this->file . '" -density 300x300 -compress jpeg "' . $this->pdf . '"');
 
         return TRUE;
 
@@ -144,7 +144,7 @@ class PDFConverter {
         // http://blog.spiralofhope.com/667-importing-eml-into-msg-or-mbox.html
         // Convert .msg file to .eml
         if (!file_exists($eml_file) && preg_match('/\.msg$/i', $this->file)) {
-          shell_exec('mapitool -i "' . $this->file . '"');
+          shell_exec('mapitool -i --no-verbose "' . $this->file . '" &>/dev/null');
         }
 
         // http://manpages.ubuntu.com/manpages/intrepid/man1/munpack.1.html
