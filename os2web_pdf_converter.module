@@ -18,12 +18,16 @@
  */
 function os2web_pdf_converter_cron() {
     //fetch all rows that does not have Completed status
-    $result = db_query("SELECT * FROM {os2dagsorden_pdf_converter_directories} WHERE progress is null or progress <> 'Completed'");
+    $result = db_query("SELECT * FROM {os2web_pdf_converter_directories} WHERE progress is null or progress <> 'Completed'");
     //loop through all rows
     foreach ($result as $r) {
         //check if dir exists
         if(is_dir($r->dirname)){
-            shell_exec('php ' . drupal_get_path('module', 'os2web_pdf_converter') . ' os2web_pdf_converter.cron.php ' . $r->dirname . ' ' . drupal_get_path('module', 'os2web_pdf_converter'));
+            $shell_return = shell_exec('/usr/bin/php ' . DRUPAL_ROOT . '/' . drupal_get_path('module', 'os2web_pdf_converter') . '/os2web_pdf_converter.cron.php ' . $r->dirname . ' ' . DRUPAL_ROOT . ' 2>&1');
+print_r('/usr/bin/php ' . DRUPAL_ROOT . '/' . drupal_get_path('module', 'os2web_pdf_converter') . '/os2web_pdf_converter.cron.php ' . $r->dirname . ' 2>&1');
+print_r('<br/>');
+print_r($shell_return);
+print_r('<br/>');
             //update status to completed
             db_update('os2web_pdf_converter_directories')
                 ->fields(array("progress" => "Completed"))
