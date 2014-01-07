@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * os2web_pdf_converter
+ *
+ * PHP version 5
+ *
+ * @category OS2Dagsorden
+ * @package  OS2Dagsorden
+ * @file     Install file
+ * @author   Konstantin Sepp <ks@bellcom.ee>, Stanislav Kutasevits <stan@bellcom.dk>
+ * @license  http://www.gnu.org/licenses/gpl-2.0.html GNU General Public License, version 2
+ * @link     http://bellcom.dk
+ */
+
+/**
+ * Creates a table in the database that will controll the workflow of the module.
+ *
+ * @return array
+ */
+function os2web_pdf_converter_schema() {
+    $schema['os2web_pdf_converter_directories'] = array(
+        'description' => 'This table is used as schedule for directory to PDF conversion',
+        'fields' => array(
+            'id' => array(
+                'description' => 'Record id.',
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE
+            ),
+            'dirname' => array(
+                'description' => 'Name of the dir.',
+                'type' => 'varchar',
+                'length' => 1024,
+                'serialize' => TRUE,
+                'not null' => TRUE
+            ),
+	        'progress' => array(
+                'description' => 'The information about the job.',
+                'type' => 'varchar',
+                'length' => 1024,
+                'serialize' => TRUE
+            )
+        ),
+        'primary key' => array('id')
+    );
+    return $schema;
+}

@@ -1,0 +1,5 @@
+name = OS2Web directory to PDF converter
+description = Converts files in directory to PDF
+package = OS2Dagsorden
+core = 7.x
+

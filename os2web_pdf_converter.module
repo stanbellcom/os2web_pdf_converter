@@ -1,0 +1,67 @@
+<?php
+
+/**
+ * os2web_pdf_converter
+ *
+ * PHP version 5
+ *
+ * @category OS2Dagsorden
+ * @package  os2dagsorden_pdf_converter
+ * @author   Konstantin Sepp <ks@bellcom.ee>, Stanislav Kutasevits <stan@bellcom.dk>
+ * @license  http://www.gnu.org/licenses/gpl-2.0.html GNU General Public License, version 2
+ * @link     http://bellcom.dk
+ */
+
+/**
+ * Cron implementation.
+ * Goes through the entries in database table, converts files in directories to PDF
+ */
+function os2web_pdf_converter_cron() {
+    //fetch all rows that does not have Completed status
+    $result = db_query("SELECT * FROM {os2dagsorden_pdf_converter_directories} WHERE progress is null or progress <> 'Completed'");
+    //loop through all rows
+    foreach ($result as $r) {
+        //check if dir exists
+        if(is_dir($r->dirname)){
+            shell_exec('php ' . drupal_get_path('module', 'os2web_pdf_converter') . ' os2web_pdf_converter.cron.php ' . $r->dirname . ' ' . drupal_get_path('module', 'os2web_pdf_converter'));
+            //update status to completed
+            db_update('os2web_pdf_converter_directories')
+                ->fields(array("progress" => "Completed"))
+                ->condition('id', $r->id)
+                ->execute();
+        }
+        else{
+            //if is not a directory
+            //update status to not found.
+            drupal_set_message($r->dirname . " is not a dir");
+            db_update('os2web_pdf_converter_directories')
+                ->fields(array("progress" => "Not found"))
+                ->condition('id', $r->id)
+                ->execute();
+
+        }
+    }
+}
+
+/**
+ * Insert record to database for directory conversion
+ *
+ * @param string $dirpath
+ *  directory path to insert into database
+ */
+function os2web_pdf_converter_add_dir($dirpath){
+    //check if record allready exists
+    $result = db_select("os2web_pdf_converter_directories", "t")
+        ->fields("t")
+        ->condition("dirname", $dirpath, "like")
+        ->range(0,1)
+        ->execute()
+        ->rowCount();
+
+    //insert to database if not exists
+    if(!$result){
+        db_insert("os2web_pdf_converter_directories")
+            ->fields(array("dirname" => $dirpath))
+            ->execute();
+    }
+}
